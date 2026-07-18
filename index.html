@@ -134,6 +134,11 @@
   }
   .player-btn:hover { border-color:var(--gold); color:var(--ink); }
   .player-btn.selected { background:var(--hat); border-color:var(--hat); color:white; font-weight:500; }
+  .player-btn.already-done {
+  border-color: #A8D5B5;
+  color: #27AE60;
+  background: #F0FAF3;
+}
 
   /* ── BUTTONS ── */
   .validate-btn {
@@ -250,7 +255,7 @@
 <body>
 
 <div class="header">
-  <div class="header-eyebrow">Camp — été 2025</div>
+  <div class="header-eyebrow">Camp — été 2026</div>
   <h1 id="mainTitle">Le <span>Chapeau Voyageur</span></h1>
 </div>
 
@@ -465,7 +470,14 @@ function renderJeu() {
 }
 
 function renderPlayers() {
-  return JOUEURS.map(p => `<button class="player-btn ${selectedPlayer === p ? "selected" : ""}" onclick="doSelectPlayer('${escAttr(p)}')">${escHtml(p)}</button>`).join("");
+  const dejaDone = Object.values(gameState.completed || {});
+  return JOUEURS.map(p => {
+    const done = dejaDone.includes(p);
+    return `<button class="player-btn 
+      ${selectedPlayer === p ? "selected" : ""} 
+      ${done ? "already-done" : ""}" 
+      onclick="doSelectPlayer('${escAttr(p)}')">${escHtml(p)}${done ? " ✓" : ""}</button>`;
+  }).join("");
 }
 
 window.doSelectPlayer = function(name) {
