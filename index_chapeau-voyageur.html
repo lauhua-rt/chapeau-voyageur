@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Chaîne — Le Chapeau Voyageur</title>
+<style>
+  :root {
+    --hat: #2C3E50;
+    --hat-light: #34495E;
+    --gold: #E8B84B;
+    --gold-light: #F5D078;
+    --cream: #FAF7F2;
+    --ink: #1A1A1A;
+    --ink-soft: #4A4A4A;
+    --ink-muted: #8A8A8A;
+    --border: #E0DAD0;
+    --success: #27AE60;
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Georgia', serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--hat);
+    color: white;
+    padding: 1.2rem 1.5rem 1rem;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .header-eyebrow {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+  .header h1 {
+    font-size: 1.35rem;
+    font-weight: normal;
+    letter-spacing: 0.03em;
+  }
+  .header h1 span { color: var(--gold); font-style: italic; }
+
+  /* ── PROGRESS BAR ── */
+  .progress-wrap {
+    background: var(--hat-light);
+    padding: 8px 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .progress-bar {
+    flex: 1;
+    height: 4px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+  .progress-text {
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: var(--gold-light);
+    white-space: nowrap;
+  }
+
+  /* ── MAIN CONTENT ── */
+  .main { padding: 1.5rem 1.2rem 2rem; max-width: 480px; margin: 0 auto; }
+
+  /* ── DÉFI CARD ── */
+  .defi-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 1.2rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .defi-badge {
+    background: var(--gold);
+    color: var(--ink);
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .defi-badge .cat {
+    font-style: italic;
+    font-family: Georgia, serif;
+    letter-spacing: 0;
+    font-size: 11px;
+  }
+  .defi-body { padding: 1.3rem 1.3rem 1rem; }
+  .defi-title {
+    font-size: 1.25rem;
+    font-weight: normal;
+    margin-bottom: 0.7rem;
+    line-height: 1.3;
+  }
+  .defi-desc {
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 0.88rem;
+    line-height: 1.65;
+    color: var(--ink-soft);
+  }
+
+  /* ── DONE STATE ── */
+  .defi-done-banner {
+    background: #EAF7EF;
+    border-top: 1px solid #C3E8D1;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 12px;
+    color: var(--success);
+  }
+  .checkmark { font-size: 16px; }
+
+  /* ── RÉALISÉ PAR ── */
+  .realise-section { margin-bottom: 1.2rem; }
+  .realise-label {
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 10px;
+  }
+  .players-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+  .player-btn {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 4px;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.12s;
+    line-height: 1.3;
+  }
+  .player-btn:hover { border-color: var(--gold); color: var(--ink); }
+  .player-btn.selected {
+    background: var(--hat);
+    border-color: var(--hat);
+    color: white;
+    font-weight: 500;
+  }
+
+  /* ── VALIDATE BTN ── */
+  .validate-btn {
+    width: 100%;
+    background: var(--hat);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    padding: 15px;
+    font-family: Georgia, serif;
+    font-size: 1rem;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    transition: background 0.15s, transform 0.1s;
+    margin-bottom: 1.2rem;
+  }
+  .validate-btn:hover:not(:disabled) { background: var(--hat-light); }
+  .validate-btn:active:not(:disabled) { transform: scale(0.98); }
+  .validate-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .validate-btn.success { background: var(--success); }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex;
+    background: var(--hat-light);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 10px;
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.5);
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+  }
+  .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+  /* ── ADMIN ── */
+  .admin-panel {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.2rem;
+    margin-bottom: 1.2rem;
+  }
+  .admin-panel h2 {
+    font-size: 0.85rem;
+    font-weight: normal;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-family: 'Helvetica Neue', sans-serif;
+    color: var(--ink-muted);
+    margin-bottom: 1rem;
+  }
+  .admin-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    align-items: center;
+  }
+  .admin-row label {
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 12px;
+    color: var(--ink-soft);
+    min-width: 90px;
+  }
+  .admin-row span {
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .admin-defi-list { margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 0.8rem; }
+  .admin-defi-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 12px;
+    gap: 8px;
+  }
+  .admin-defi-item:last-child { border-bottom: none; }
+  .admin-defi-item .num { color: var(--ink-muted); min-width: 24px; }
+  .admin-defi-item .titre { flex: 1; }
+  .admin-defi-item .who { color: var(--success); font-weight: 500; font-size: 11px; text-align: right; }
+  .admin-defi-item .pending { color: var(--ink-muted); font-size: 11px; }
+  .reset-btn {
+    margin-top: 1rem;
+    background: none;
+    border: 1px solid #E74C3C;
+    border-radius: 8px;
+    color: #E74C3C;
+    padding: 8px 16px;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    width: 100%;
+  }
+  .reset-btn:hover { background: #FDECEA; }
+
+  /* ── ÉDITEUR DE DÉFIS ── */
+  .editor-intro {
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    margin-bottom: 1.2rem;
+    padding: 1rem;
+    background: #FEF9EC;
+    border: 1px solid #F0D98A;
+    border-radius: var(--radius);
+  }
+  .defi-edit-item {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .defi-edit-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    cursor: pointer;
+    user-select: none;
+    background: #FAFAFA;
+  }
+  .defi-edit-header:hover { background: #F5F5F5; }
+  .defi-edit-num {
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: var(--ink-muted);
+    min-width: 28px;
+  }
+  .defi-edit-name {
+    flex: 1;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .defi-edit-name.empty { color: var(--ink-muted); font-style: italic; font-weight: normal; }
+  .defi-edit-chevron {
+    font-size: 12px;
+    color: var(--ink-muted);
+    transition: transform 0.2s;
+  }
+  .defi-edit-chevron.open { transform: rotate(180deg); }
+  .defi-edit-body {
+    padding: 12px;
+    border-top: 1px solid var(--border);
+    display: none;
+  }
+  .defi-edit-body.open { display: block; }
+  .edit-field {
+    margin-bottom: 10px;
+  }
+  .edit-field label {
+    display: block;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 5px;
+  }
+  .edit-field input, .edit-field textarea, .edit-field select {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+    background: white;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .edit-field input:focus, .edit-field textarea:focus, .edit-field select:focus {
+    border-color: var(--gold);
+  }
+  .edit-field textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+  .edit-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .btn-save {
+    flex: 1;
+    background: var(--hat);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 9px;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .btn-save:hover { background: var(--hat-light); }
+  .btn-delete {
+    background: none;
+    border: 1px solid #E74C3C;
+    color: #E74C3C;
+    border-radius: 8px;
+    padding: 9px 14px;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .btn-delete:hover { background: #FDECEA; }
+  .btn-add {
+    width: 100%;
+    background: none;
+    border: 1px dashed var(--gold);
+    border-radius: var(--radius);
+    color: var(--hat);
+    padding: 12px;
+    font-family: Georgia, serif;
+    font-size: 0.95rem;
+    cursor: pointer;
+    margin-top: 4px;
+    transition: background 0.15s;
+  }
+  .btn-add:hover { background: #FEF9EC; }
+  .saved-flash {
+    display: inline-block;
+    color: var(--success);
+    font-size: 11px;
+    font-family: 'Helvetica Neue', sans-serif;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .saved-flash.show { opacity: 1; }
+
+  /* ── JOUEURS ── */
+  .joueur-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .joueur-row:last-child { border-bottom: none; }
+  .joueur-input {
+    flex: 1;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+    background: transparent;
+    outline: none;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .joueur-input:hover { background: var(--cream); }
+  .joueur-input:focus { border-color: var(--gold); background: white; }
+  .joueur-del {
+    background: none;
+    border: none;
+    color: var(--ink-muted);
+    font-size: 13px;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 4px;
+    line-height: 1;
+    transition: color 0.15s, background 0.15s;
+  }
+  .joueur-del:hover { color: #E74C3C; background: #FDECEA; }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: var(--ink-muted);
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .empty-state .icon { font-size: 2.5rem; margin-bottom: 0.8rem; }
+
+  /* ── COMPLETED ── */
+  .completed-screen {
+    text-align: center;
+    padding: 3rem 1rem;
+  }
+  .completed-screen .big-emoji { font-size: 4rem; margin-bottom: 1rem; }
+  .completed-screen h2 { font-size: 1.5rem; font-weight: normal; margin-bottom: 0.5rem; }
+  .completed-screen p {
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--hat);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 24px;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 13px;
+    transition: transform 0.3s ease;
+    z-index: 100;
+    white-space: nowrap;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-eyebrow">Camp — été 2025</div>
+  <h1 id="mainTitle">Le <span>Chapeau Voyageur</span></h1>
+</div>
+
+<div class="progress-wrap" id="progressWrap">
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-text" id="progressText">0 / 0</div>
+</div>
+
+<div class="tabs" id="tabBar" style="display:none">
+  <button class="tab-btn active" id="tabJeu" onclick="switchTab('jeu')">🎩 Jeu</button>
+  <button class="tab-btn" id="tabDefis" onclick="switchTab('defis')">✏️ Défis</button>
+  <button class="tab-btn" id="tabJoueurs" onclick="switchTab('joueurs')">👥 Joueurs</button>
+  <button class="tab-btn" id="tabRecap" onclick="switchTab('recap')">📋 Récap</button>
+</div>
+
+<div class="main" id="mainContent"></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── STORAGE KEYS ──────────────────────────────────────────────────────
+const KEY_DEFIS   = "chapeau-defis-v1";
+const KEY_JOUEURS = "chapeau-joueurs-v1";
+const KEY_STATE   = "chapeau-state-v1";
+
+// ── LOAD / SAVE ───────────────────────────────────────────────────────
+function loadDefis() {
+  try { const r = localStorage.getItem(KEY_DEFIS); if (r) return JSON.parse(r); } catch(e) {}
+  return [];
+}
+function saveDefis(d) { localStorage.setItem(KEY_DEFIS, JSON.stringify(d)); }
+
+function loadJoueurs() {
+  try { const r = localStorage.getItem(KEY_JOUEURS); if (r) return JSON.parse(r); } catch(e) {}
+  return ["Alexia","Baptiste","Camille","Charlotte","Clément","Corentin",
+          "Dylan","Élise","Emma","Ethan","Gaëlle","Hugo",
+          "Inès","Jade","Julien","Kévin","Lena","Léo",
+          "Lucas","Lucie","Manon","Martin","Nathan","Noémie",
+          "Océane","Romain","Sarah"];
+}
+function saveJoueurs(j) { localStorage.setItem(KEY_JOUEURS, JSON.stringify(j)); }
+
+function loadGameState() {
+  try { const r = localStorage.getItem(KEY_STATE); if (r) return JSON.parse(r); } catch(e) {}
+  return { currentIndex: 0, completed: {} };
+}
+function saveGameState(s) { localStorage.setItem(KEY_STATE, JSON.stringify(s)); }
+
+// ── APP STATE ──────────────────────────────────────────────────────────
+let DEFIS     = loadDefis();
+let JOUEURS   = loadJoueurs();
+let gameState = loadGameState();
+let selectedPlayer = null;
+let currentTab = "jeu";
+let adminMode  = false;
+
+// ── DOUBLE-TAP SUR LE TITRE ───────────────────────────────────────────
+let lastTap = 0;
+document.getElementById("mainTitle").addEventListener("click", function() {
+  const now = Date.now();
+  if (now - lastTap < 350) {
+    adminMode = !adminMode;
+    document.getElementById("tabBar").style.display = adminMode ? "flex" : "none";
+    if (!adminMode) {
+      switchTab("jeu");
+    } else {
+      showToast("Mode édition ouvert 🔓");
+    }
+  }
+  lastTap = now;
+});
+let openEditorId = null;
+
+// ── TABS ───────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  currentTab = tab;
+  ["jeu","defis","joueurs","recap"].forEach(t => {
+    const el = document.getElementById("tab" + t.charAt(0).toUpperCase() + t.slice(1));
+    if (el) el.classList.toggle("active", t === tab);
+  });
+  document.getElementById("progressWrap").style.display = tab === "jeu" ? "flex" : "none";
+  render();
+}
+
+// ── RENDER DISPATCH ───────────────────────────────────────────────────
+function render() {
+  updateProgress();
+  if (currentTab === "jeu")     renderJeu();
+  if (currentTab === "defis")   renderEditeur();
+  if (currentTab === "joueurs") renderJoueurs();
+  if (currentTab === "recap")   renderRecap();
+}
+
+function updateProgress() {
+  const done  = Object.keys(gameState.completed).length;
+  const total = DEFIS.length;
+  const pct   = total ? (done / total * 100) : 0;
+  document.getElementById("progressFill").style.width = pct + "%";
+  document.getElementById("progressText").textContent = done + " / " + total;
+}
+
+// ── JEU ───────────────────────────────────────────────────────────────
+function renderJeu() {
+  const el = document.getElementById("mainContent");
+
+  if (DEFIS.length === 0) {
+    el.innerHTML = `
+      <div class="empty-state">
+        <div class="icon">🎩</div>
+        <p>Aucun défi pour l'instant.<br>Va dans l'onglet <strong>Mes défis</strong> pour en ajouter !</p>
+      </div>`;
+    return;
+  }
+
+  const done  = Object.keys(gameState.completed).length;
+  const total = DEFIS.length;
+
+  if (done >= total) {
+    el.innerHTML = `
+      <div class="completed-screen">
+        <div class="big-emoji">🎩✨</div>
+        <h2>Tous les défis accomplis !</h2>
+        <p>Le chapeau a voyagé, la chaîne est complète.<br>Quelle équipe extraordinaire.</p>
+      </div>`;
+    return;
+  }
+
+  const defi   = DEFIS[gameState.currentIndex] || DEFIS[0];
+  const isDone = !!gameState.completed[defi.id];
+
+  el.innerHTML = `
+    <div class="defi-card">
+      <div class="defi-badge">
+        <span>Défi #${gameState.currentIndex + 1}</span>
+        <span class="cat">${defi.cat || ""}</span>
+      </div>
+      <div class="defi-body">
+        <h2 class="defi-title">${defi.titre}</h2>
+        <p class="defi-desc">${defi.desc}</p>
+      </div>
+      ${isDone ? `
+        <div class="defi-done-banner">
+          <span class="checkmark">✓</span>
+          <span>Réalisé par <strong>${gameState.completed[defi.id]}</strong> — le chapeau peut passer !</span>
+        </div>` : ""}
+    </div>
+
+    ${!isDone ? `
+      <div class="realise-section">
+        <div class="realise-label">Qui a réalisé ce défi ?</div>
+        <div class="players-grid" id="playersGrid">${renderPlayers()}</div>
+      </div>
+      <button class="validate-btn" id="validateBtn" onclick="validate()" ${selectedPlayer ? "" : "disabled"}>
+        Valider le défi ✓
+      </button>
+    ` : `
+      <button class="validate-btn success" onclick="nextDefi()">
+        Passer au défi suivant →
+      </button>
+    `}
+  `;
+}
+
+function renderPlayers() {
+  return JOUEURS.map(p => `
+    <button class="player-btn ${selectedPlayer === p ? "selected" : ""}" onclick="selectPlayer('${p}')">${p}</button>
+  `).join("");
+}
+
+function selectPlayer(name) {
+  selectedPlayer = name;
+  document.getElementById("playersGrid").innerHTML = renderPlayers();
+  document.getElementById("validateBtn").disabled = false;
+}
+
+function validate() {
+  if (!selectedPlayer) return;
+  const defi = DEFIS[gameState.currentIndex];
+  gameState.completed[defi.id] = selectedPlayer;
+  saveGameState(gameState);
+  const who = selectedPlayer;
+  selectedPlayer = null;
+  showToast(`Défi validé pour ${who} ! 🎩`);
+  render();
+}
+
+function nextDefi() {
+  if (gameState.currentIndex < DEFIS.length - 1) {
+    gameState.currentIndex++;
+    saveGameState(gameState);
+  }
+  selectedPlayer = null;
+  render();
+}
+
+// ── ÉDITEUR DE DÉFIS ──────────────────────────────────────────────────
+function renderEditeur() {
+  const el = document.getElementById("mainContent");
+  const cats = ["Corps & mouvement","Vocal & sonore","Collectif & complicité",
+                "Déguisement & mise en scène","Service & attention","Artistique & créatif","Autre"];
+
+  const items = DEFIS.map((d, i) => {
+    const isOpen = openEditorId === d.id;
+    return `
+      <div class="defi-edit-item" id="edititem-${d.id}">
+        <div class="defi-edit-header" onclick="toggleEditor('${d.id}')">
+          <span class="defi-edit-num">#${i+1}</span>
+          <span class="defi-edit-name ${d.titre ? "" : "empty"}">${d.titre || "Défi sans titre"}</span>
+          <span class="defi-edit-chevron ${isOpen ? "open" : ""}">▾</span>
+        </div>
+        <div class="defi-edit-body ${isOpen ? "open" : ""}">
+          <div class="edit-field">
+            <label>Titre du défi</label>
+            <input type="text" id="titre-${d.id}" value="${escHtml(d.titre)}" placeholder="Ex : Le robot défaillant" />
+          </div>
+          <div class="edit-field">
+            <label>Catégorie</label>
+            <select id="cat-${d.id}">
+              ${cats.map(c => `<option value="${c}" ${d.cat === c ? "selected" : ""}>${c}</option>`).join("")}
+            </select>
+          </div>
+          <div class="edit-field">
+            <label>Description</label>
+            <textarea id="desc-${d.id}" placeholder="Décris le défi en détail…">${escHtml(d.desc)}</textarea>
+          </div>
+          <div class="edit-actions">
+            <button class="btn-save" onclick="saveDefi('${d.id}')">Enregistrer <span class="saved-flash" id="flash-${d.id}">✓ Sauvegardé</span></button>
+            <button class="btn-delete" onclick="deleteDefi('${d.id}')">Supprimer</button>
+          </div>
+        </div>
+      </div>`;
+  }).join("");
+
+  el.innerHTML = `
+    <div class="editor-intro">
+      Ajoute ici tous tes défis. Ils s'afficheront dans l'ordre dans l'onglet <strong>Jeu</strong>.
+    </div>
+    ${DEFIS.length === 0 ? `<div class="empty-state"><div class="icon">📝</div><p>Aucun défi encore.<br>Clique sur le bouton ci-dessous pour commencer !</p></div>` : items}
+    <button class="btn-add" onclick="addDefi()">+ Ajouter un défi</button>
+  `;
+}
+
+function toggleEditor(id) {
+  openEditorId = openEditorId === id ? null : id;
+  renderEditeur();
+}
+
+function addDefi() {
+  const newId = "d" + Date.now();
+  DEFIS.push({ id: newId, titre: "", cat: "Autre", desc: "" });
+  saveDefis(DEFIS);
+  openEditorId = newId;
+  render();
+  setTimeout(() => {
+    const el = document.getElementById("edititem-" + newId);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, 50);
+}
+
+function saveDefi(id) {
+  const idx = DEFIS.findIndex(d => d.id === id);
+  if (idx === -1) return;
+  DEFIS[idx].titre = document.getElementById("titre-" + id).value.trim();
+  DEFIS[idx].cat   = document.getElementById("cat-"   + id).value;
+  DEFIS[idx].desc  = document.getElementById("desc-"  + id).value.trim();
+  saveDefis(DEFIS);
+  updateProgress();
+  const flash = document.getElementById("flash-" + id);
+  if (flash) { flash.classList.add("show"); setTimeout(() => flash.classList.remove("show"), 1800); }
+  // refresh just the header label
+  const header = document.querySelector(`#edititem-${id} .defi-edit-name`);
+  if (header) {
+    header.textContent = DEFIS[idx].titre || "Défi sans titre";
+    header.className = "defi-edit-name" + (DEFIS[idx].titre ? "" : " empty");
+  }
+}
+
+function deleteDefi(id) {
+  if (!confirm("Supprimer ce défi ?")) return;
+  DEFIS = DEFIS.filter(d => d.id !== id);
+  saveDefis(DEFIS);
+  if (openEditorId === id) openEditorId = null;
+  // reset game index if needed
+  if (gameState.currentIndex >= DEFIS.length) {
+    gameState.currentIndex = Math.max(0, DEFIS.length - 1);
+    saveGameState(gameState);
+  }
+  render();
+}
+
+// ── JOUEURS ───────────────────────────────────────────────────────────
+function renderJoueurs() {
+  const el = document.getElementById("mainContent");
+  el.innerHTML = `
+    <div class="editor-intro">
+      Liste des participants qui apparaîtront dans l'écran de jeu. Modifie, ajoute ou supprime des noms librement.
+    </div>
+    <div class="admin-panel" style="padding-bottom:0.5rem">
+      <h2>Participants (${JOUEURS.length})</h2>
+      <div id="joueursList">
+        ${JOUEURS.map((j, i) => `
+          <div class="joueur-row" id="jrow-${i}">
+            <input type="text" class="joueur-input" value="${escHtml(j)}"
+              onchange="updateJoueur(${i}, this.value)"
+              onblur="updateJoueur(${i}, this.value)" />
+            <button class="joueur-del" onclick="deleteJoueur(${i})" title="Supprimer">✕</button>
+          </div>`).join("")}
+      </div>
+      <button class="btn-add" style="margin-top:0.8rem" onclick="addJoueur()">+ Ajouter un participant</button>
+    </div>
+  `;
+}
+
+function updateJoueur(i, val) {
+  JOUEURS[i] = val.trim();
+  saveJoueurs(JOUEURS);
+  // mettre à jour le label du récap sans re-render complet
+  const el = document.querySelector(`#jrow-${i} .joueur-input`);
+  if (el && el.value !== val.trim()) el.value = val.trim();
+}
+
+function deleteJoueur(i) {
+  if (!confirm(`Supprimer "${JOUEURS[i]}" ?`)) return;
+  JOUEURS.splice(i, 1);
+  saveJoueurs(JOUEURS);
+  renderJoueurs();
+}
+
+function addJoueur() {
+  JOUEURS.push("");
+  saveJoueurs(JOUEURS);
+  renderJoueurs();
+  // focus sur le dernier champ
+  setTimeout(() => {
+    const inputs = document.querySelectorAll(".joueur-input");
+    if (inputs.length) inputs[inputs.length - 1].focus();
+  }, 50);
+}
+
+// ── RÉCAP ─────────────────────────────────────────────────────────────
+function renderRecap() {
+  const el = document.getElementById("mainContent");
+  const done = Object.keys(gameState.completed).length;
+
+  el.innerHTML = `
+    <div class="admin-panel">
+      <h2>Récapitulatif</h2>
+      <div class="admin-row"><label>Défis validés</label><span>${done} / ${DEFIS.length}</span></div>
+      ${DEFIS[gameState.currentIndex] ? `<div class="admin-row"><label>Défi en cours</label><span>${DEFIS[gameState.currentIndex].titre || "—"}</span></div>` : ""}
+      <div class="admin-defi-list">
+        ${DEFIS.length === 0 ? `<p style="font-family:sans-serif;font-size:13px;color:var(--ink-muted);text-align:center;padding:1rem">Aucun défi encore.</p>` :
+          DEFIS.map((d, i) => `
+            <div class="admin-defi-item">
+              <span class="num">#${i+1}</span>
+              <span class="titre">${d.titre || "Sans titre"}</span>
+              ${gameState.completed[d.id]
+                ? `<span class="who">✓ ${gameState.completed[d.id]}</span>`
+                : `<span class="pending">—</span>`}
+            </div>`).join("")}
+      </div>
+      <button class="reset-btn" onclick="resetAll()">Réinitialiser la progression du jeu</button>
+    </div>
+  `;
+}
+
+function resetAll() {
+  if (confirm("Réinitialiser toute la progression ? Les défis sont conservés.")) {
+    gameState = { currentIndex: 0, completed: {} };
+    saveGameState(gameState);
+    selectedPlayer = null;
+    render();
+    showToast("Progression réinitialisée !");
+  }
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────
+function escHtml(str) {
+  return (str || "").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2500);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────
+document.getElementById("progressWrap").style.display = "flex";
+render();
+</script>
+</body>
+</html>
